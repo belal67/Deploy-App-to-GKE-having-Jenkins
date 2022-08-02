@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  jenkins
+  namespace: jenkins-ns
+  labels:
+    app:  jenkins
+spec:
+  selector:
+    matchLabels:
+      app: jenkins
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  jenkins
+    spec:
+      serviceAccountName: jenkins-admin
+      securityContext:
+              fsGroup: 1000
+              runAsUser: 1000 
+      containers:
+      - name:  jenkins-container
+        image:  belalhany/iti_jenkins:2.0
+        ports:
+        - containerPort:  80
+          name:  myapp
+        - containerPort: 8080
+        - containerPort: 50000
+          name: jnlp-port
+        volumeMounts:
+        - name: jenkins-pvc
+          mountPath: /var/jenkins_home
+        - mountPath: /var/run/docker.sock
+          name: docker-socket
+      volumes:
+        - name: jenkins-pvc
+          persistentVolumeClaim:
+            claimName: jenkins-pvc
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+
