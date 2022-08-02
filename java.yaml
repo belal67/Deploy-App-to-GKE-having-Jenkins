@@ -18,7 +18,6 @@ spec:
       containers:
       - name: docker
         image: docker:latest
-        namespace: apps-ns
         command:
         - cat
         tty: true
